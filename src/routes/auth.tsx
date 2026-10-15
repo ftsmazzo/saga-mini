@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/auth")({
@@ -53,25 +52,13 @@ function AuthPage() {
           options: { emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
-        toast.success("Conta criada. Verifique seu e-mail se a confirmação estiver ativa.");
+        void navigate({ to: "/" });
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Falha na autenticação.");
     } finally {
       setEnviando(false);
     }
-  };
-
-  const google = async () => {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      toast.error("Não foi possível entrar com Google.");
-      return;
-    }
-    if (result.redirected) return;
-    void navigate({ to: "/" });
   };
 
   return (
@@ -110,9 +97,6 @@ function AuthPage() {
               {enviando ? "Aguarde…" : modo === "login" ? "Entrar" : "Criar conta"}
             </button>
           </form>
-          <button className="btn" style={{ width: "100%", marginTop: 10 }} onClick={() => void google()}>
-            Entrar com Google
-          </button>
           <p className="table-note" style={{ textAlign: "center" }}>
             {modo === "login" ? "Não tem conta?" : "Já tem conta?"}{" "}
             <button
